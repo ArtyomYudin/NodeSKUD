@@ -13,6 +13,7 @@ const wss = websocketServer();
 const initZabbixAPIServer = require('./zabbix_api_server');
 const vpnAPIServer = require('./vpn_api_server');
 const dhcpAPIServer = require('./dhcp_api_server');
+const avayaAPIServer = require('./avaya_api_server');
 
 const socket = initApiSocket();
 // const http = httpServer(socket);
@@ -298,43 +299,8 @@ function parseEvent(data) {
   const employee = [3, 4, 189, 190, 191, 192, 193, 194, 195, 332];
   const apServerRoom = [29, 38];
   const guestCardId = [
-    230,
-    231,
-    235,
-    236,
-    239,
-    240,
-    241,
-    242,
-    244,
-    246,
-    247,
-    248,
-    249,
-    250,
-    251,
-    252,
-    256,
-    257,
-    258,
-    261,
-    262,
-    263,
-    264,
-    265,
-    266,
-    267,
-    268,
-    269,
-    270,
-    280,
-    287,
-    291,
-    293,
-    295,
-    296,
-    298,
-    301,
+    230, 231, 235, 236, 239, 240, 241, 242, 244, 246, 247, 248, 249, 250, 251, 252, 256, 257, 258, 261, 262, 263, 264, 265, 266, 267, 268,
+    269, 270, 280, 287, 291, 293, 295, 296, 298, 301,
   ];
 
   resive.Data.forEach(async item => {
@@ -650,6 +616,7 @@ wss.on('connection', ws => {
   initDash(ws);
   vpnAPIServer.init(wss, ws);
   dhcpAPIServer.init(wss, ws);
+  avayaAPIServer.init(wss, ws);
   // initZabbixAPIServer(wss, ws);
 
   ws.on('close', () => {
@@ -691,6 +658,7 @@ function reversAPIServer() {
   initZabbixAPIServer(wss);
   vpnAPIServer.vpnEvents(wss);
   dhcpAPIServer.dhcpEvents(wss);
+  avayaAPIServer.avayaEvents(wss);
 }
 
 exports.sendExtJSON = sendExtJSON;

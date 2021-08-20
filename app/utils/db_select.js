@@ -1,41 +1,7 @@
 const guestEntranceCardId = 293;
 const guestCICardId = [
-  230,
-  231,
-  235,
-  236,
-  239,
-  240,
-  241,
-  242,
-  244,
-  246,
-  247,
-  248,
-  249,
-  250,
-  251,
-  252,
-  256,
-  257,
-  258,
-  261,
-  262,
-  263,
-  264,
-  265,
-  266,
-  267,
-  268,
-  269,
-  270,
-  280,
-  287,
-  291,
-  295,
-  296,
-  298,
-  301,
+  230, 231, 235, 236, 239, 240, 241, 242, 244, 246, 247, 248, 249, 250, 251, 252, 256, 257, 258, 261, 262, 263, 264, 265, 266, 267, 268,
+  269, 270, 280, 287, 291, 295, 296, 298, 301,
 ];
 // const employeeUC = [3, 4, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205];
 const employeeUC = [3, 4, 189, 190, 191, 192, 193, 194, 195, 332];
@@ -369,6 +335,14 @@ const dhcpInfo = `SELECT dhcp_info.scope_id	 AS scopeId	,
                   FROM dhcp_info
                   ORDER by dhcp_info.scope_id`;
 
+const avayaCDRCurrentDay = `SELECT dhcp_leases.ip_address AS ipAddress,
+                              dhcp_leases.mac_address AS macAddress,
+                              dhcp_leases.host_name AS hostName,
+                              dhcp_leases.address_state AS addressState,
+                              dhcp_leases.lease_expiry_time AS leaseExpiryTime
+                     FROM dhcp_leases
+                     ORDER by dhcp_leases.ip_address`;
+
 exports.allTenEntry = allTenEntry;
 exports.allTenExit = allTenExit;
 exports.allEmployeeUC = allEmployeeUC;
@@ -401,3 +375,4 @@ exports.vpnAllUsers = vpnAllUsers;
 exports.vpnUserStatus = vpnUserStatus;
 exports.dhcpAllLeases = dhcpAllLeases;
 exports.dhcpInfo = dhcpInfo;
+exports.avayaCDRCurrentDay = avayaCDRCurrentDay;
