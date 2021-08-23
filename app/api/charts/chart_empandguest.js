@@ -1,5 +1,3 @@
-'use strict';
-
 const datetime = require('node-datetime');
 
 // const logger = require('./../../config/logger_config');
@@ -16,12 +14,13 @@ let dateChartData = [];
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
   'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
 };
 
 // eslint-disable-next-line no-extend-native
-Date.prototype.addDays = (days) => {
+Date.prototype.addDays = days => {
   const date = new Date();
   date.setDate(date.getDate() + days);
   return date;
@@ -53,21 +52,33 @@ async function createChartDataArray(res) {
     return dateA - dateB;
   });
   try {
-    empChartData = await dbConnect.query(dbSelect.apiGetEmployeeCount);
-    guestChartData = await dbConnect.query(dbSelect.apiGetGuestCount);
-    ciguestChartData = await dbConnect.query(dbSelect.apiGetCIGuestCount);
-    carChartData = await dbConnect.query(dbSelect.apiGetCarCount);
+    empChartData = await dbConnect.dashboard.query(dbSelect.apiGetEmployeeCount);
+    guestChartData = await dbConnect.dashboard.query(dbSelect.apiGetGuestCount);
+    ciguestChartData = await dbConnect.dashboard.query(dbSelect.apiGetCIGuestCount);
+    carChartData = await dbConnect.dashboard.query(dbSelect.apiGetCarCount);
   } catch (err) {
     sendResError(res);
     return err;
   }
   // Собираем ключи из первого массива
-  const seglistG = guestChartData.reduce((o, el) => { o[el.xAxes] = true; return (o[el.xAxes], o); }, {});
-  const seglistC = carChartData.reduce((o, el) => { o[el.xAxes] = true; return (o[el.xAxes], o); }, {});
-  const seglistE = empChartData.reduce((o, el) => { o[el.xAxes] = true; return (o[el.xAxes], o); }, {});
-  const seglistCG = ciguestChartData.reduce((o, el) => { o[el.xAxes] = true; return (o[el.xAxes], o); }, {});
+  const seglistG = guestChartData.reduce((o, el) => {
+    o[el.xAxes] = true;
+    return o[el.xAxes], o;
+  }, {});
+  const seglistC = carChartData.reduce((o, el) => {
+    o[el.xAxes] = true;
+    return o[el.xAxes], o;
+  }, {});
+  const seglistE = empChartData.reduce((o, el) => {
+    o[el.xAxes] = true;
+    return o[el.xAxes], o;
+  }, {});
+  const seglistCG = ciguestChartData.reduce((o, el) => {
+    o[el.xAxes] = true;
+    return o[el.xAxes], o;
+  }, {});
 
-  dateChartData.forEach((el) => {
+  dateChartData.forEach(el => {
     // Добавляем отсутствующие
     if (!seglistG[el.xAxes]) {
       el.xAxes = el.xAxes;
@@ -116,8 +127,10 @@ async function createChartDataArray(res) {
   });
 
   // суммирование двух массивов (гочти через проходную и гости внутинние)
-  guestChartData = guestChartData.reduce((acc, value, index) => [...acc, { xAxes: value.xAxes, yAxes: value.yAxes + ciguestChartData[index].yAxes }], []);
-
+  guestChartData = guestChartData.reduce(
+    (acc, value, index) => [...acc, { xAxes: value.xAxes, yAxes: value.yAxes + ciguestChartData[index].yAxes }],
+    [],
+  );
 
   /*
   // Проходим по второму

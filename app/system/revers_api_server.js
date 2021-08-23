@@ -27,8 +27,8 @@ initHttpServer();
 
 async function guestPerDay(clientId) {
   try {
-    const guestCIPerDayRows = await dbConnect.query(dbSelect.guestCIPerDay);
-    const guestEntrancePerDayRows = await dbConnect.query(dbSelect.guestEntrancePerDay);
+    const guestCIPerDayRows = await dbConnect.dashboard.query(dbSelect.guestCIPerDay);
+    const guestEntrancePerDayRows = await dbConnect.dashboard.query(dbSelect.guestEntrancePerDay);
     if (clientId) {
       // io.to(clientId).emit('event_guest_per_day', guestEntrancePerDayRows.length + guestCIPerDayRows.length);
 
@@ -56,7 +56,7 @@ async function guestPerDay(clientId) {
 
 async function carTotalPerDay(clientId) {
   try {
-    const carTotalPerDayRows = await dbConnect.query(dbSelect.carTotalPerDay);
+    const carTotalPerDayRows = await dbConnect.dashboard.query(dbSelect.carTotalPerDay);
     if (clientId) {
       clientId.send(
         JSON.stringify({
@@ -83,7 +83,7 @@ async function realCarOnTerritory(clientId) {
   const carRealEntryArray = [];
   const carRealExitArray = [];
   try {
-    const carRealEntryRows = await dbConnect.query(dbSelect.carRealEntry);
+    const carRealEntryRows = await dbConnect.dashboard.query(dbSelect.carRealEntry);
     carRealEntryRows.forEach((row, i) => {
       carRealEntryArray[i] = row.gc_value_sys;
     });
@@ -92,7 +92,7 @@ async function realCarOnTerritory(clientId) {
   }
 
   try {
-    const carRealExitRows = await dbConnect.query(dbSelect.carRealExit);
+    const carRealExitRows = await dbConnect.dashboard.query(dbSelect.carRealExit);
     carRealExitRows.forEach((row, i) => {
       carRealExitArray[i] = row.gc_value_sys;
     });
@@ -189,7 +189,7 @@ async function realOnTerritory(evAddr, clientId) {
 
   // сотрудники
   try {
-    const empRealEntryRows = await dbConnect.query(dbSelect.empRealEntry(building));
+    const empRealEntryRows = await dbConnect.dashboard.query(dbSelect.empRealEntry(building));
     empRealEntryRows.forEach((row, i) => {
       empRealEntryArray[i] = row.ev_ow_id;
     });
@@ -198,7 +198,7 @@ async function realOnTerritory(evAddr, clientId) {
   }
 
   try {
-    const empRealExitRows = await dbConnect.query(dbSelect.empRealExit(building));
+    const empRealExitRows = await dbConnect.dashboard.query(dbSelect.empRealExit(building));
     empRealExitRows.forEach((row, i) => {
       empRealExitArray[i] = row.ev_ow_id;
     });
@@ -215,7 +215,7 @@ async function realOnTerritory(evAddr, clientId) {
 
   // гости
   try {
-    const guestRealEntryRows = await dbConnect.query(dbSelect.guestRealEntry(building));
+    const guestRealEntryRows = await dbConnect.dashboard.query(dbSelect.guestRealEntry(building));
     guestRealEntryRows.forEach((row, i) => {
       guestRealEntryArray[i] = row.ev_ca_value;
     });
@@ -224,7 +224,7 @@ async function realOnTerritory(evAddr, clientId) {
   }
 
   try {
-    const guestRealExitRows = await dbConnect.query(dbSelect.guestRealExit(building));
+    const guestRealExitRows = await dbConnect.dashboard.query(dbSelect.guestRealExit(building));
     guestRealExitRows.forEach((row, i) => {
       guestRealExitArray[i] = row.ev_ca_value;
     });
@@ -307,14 +307,14 @@ function parseEvent(data) {
     if (item.EvCode === 1) {
       const insertEventValue = [item.EvTime.replace(/(\d+).(\d+).(\d+)/, '$3-$2-$1'), item.EvCode, item.EvAddr, item.EvUser, item.EvCard];
       try {
-        await dbConnect.query(dbInsert.inserEvent, insertEventValue);
+        await dbConnect.dashboard.query(dbInsert.inserEvent, insertEventValue);
         if (apEntry.indexOf(item.EvAddr) !== -1) {
           try {
-            // const lastEntryRows = await dbConnect.query(dbSelect.lastEntry);
+            // const lastEntryRows = await dbConnect.dashboard.query(dbSelect.lastEntry);
             // lastEntryRows.forEach((row) => {
             //   io.emit('event_entry', row);
             // });
-            const allTenEntryRows = await dbConnect.query(dbSelect.allTenEntry);
+            const allTenEntryRows = await dbConnect.dashboard.query(dbSelect.allTenEntry);
             wss.clients.forEach(client => {
               client.send(
                 JSON.stringify({
@@ -331,7 +331,7 @@ function parseEvent(data) {
 
           if (guestCardId.indexOf(item.EvUser) === -1) {
             try {
-              const employeeTotalPerDayRows = await dbConnect.query(dbSelect.employeeTotalPerDay);
+              const employeeTotalPerDayRows = await dbConnect.dashboard.query(dbSelect.employeeTotalPerDay);
               // io.emit('event_employee_per_day', employeeTotalPerDayRows.length);
               wss.clients.forEach(client => {
                 client.send(
@@ -348,8 +348,8 @@ function parseEvent(data) {
           // guestPerDay();
           // /*
           // try {
-          //   const guestCIPerDayRows = await dbConnect.query(dbSelect.guestCIPerDay);
-          //   const guestEntrancePerDayRows = await dbConnect.query(dbSelect.guestEntrancePerDay);
+          //   const guestCIPerDayRows = await dbConnect.dashboard.query(dbSelect.guestCIPerDay);
+          //   const guestEntrancePerDayRows = await dbConnect.dashboard.query(dbSelect.guestEntrancePerDay);
           //   io.emit('event_guest_per_day', guestEntrancePerDayRows.length + guestCIPerDayRows.length);
           // } catch (error) {
           //   logger.error(error);
@@ -360,11 +360,11 @@ function parseEvent(data) {
 
         if (apExit.indexOf(item.EvAddr) !== -1) {
           try {
-            // const lastExitRows = await dbConnect.query(dbSelect.lastExit);
+            // const lastExitRows = await dbConnect.dashboard.query(dbSelect.lastExit);
             // lastExitRows.forEach((row) => {
             //   io.emit('event_exit', row);
             // });
-            const allTenExitRows = await dbConnect.query(dbSelect.allTenExit);
+            const allTenExitRows = await dbConnect.dashboard.query(dbSelect.allTenExit);
             wss.clients.forEach(client => {
               client.send(
                 JSON.stringify({
@@ -381,11 +381,11 @@ function parseEvent(data) {
 
         if (employee.indexOf(item.EvUser) !== -1) {
           try {
-            // const lastEmployeeUCRows = await dbConnect.query(dbSelect.lastEmployeeUC);
+            // const lastEmployeeUCRows = await dbConnect.dashboard.query(dbSelect.lastEmployeeUC);
             // lastEmployeeUCRows.forEach((row) => {
             //   io.emit('event_employeeuc', row);
             // });
-            const allEmployeeUCRows = await dbConnect.query(dbSelect.allEmployeeUC);
+            const allEmployeeUCRows = await dbConnect.dashboard.query(dbSelect.allEmployeeUC);
             wss.clients.forEach(client => {
               client.send(
                 JSON.stringify({
@@ -403,7 +403,7 @@ function parseEvent(data) {
 
         if (item.EvUser !== 0) {
           try {
-            const lastEmployeeRows = await dbConnect.query(dbSelect.lastEmployee(item.EvUser));
+            const lastEmployeeRows = await dbConnect.dashboard.query(dbSelect.lastEmployee(item.EvUser));
             let lastEmployee = {};
             if (lastEmployeeRows.length === 1) {
               lastEmployee = {
@@ -431,7 +431,7 @@ function parseEvent(data) {
 
         if (apServerRoom.indexOf(item.EvAddr) !== -1) {
           try {
-            const lastServerRoomEmployeeRows = await dbConnect.query(dbSelect.lastServerRoomEmployee(item.EvUser));
+            const lastServerRoomEmployeeRows = await dbConnect.dashboard.query(dbSelect.lastServerRoomEmployee(item.EvUser));
             /*
             let lastServerRoomEmployee = {};
             if (lastServerRoomEmployeeRows.length === 1) {
@@ -466,8 +466,8 @@ function parseEvent(data) {
 
 async function lastServerRoomEmployee(clientId) {
   try {
-    const lastServerRoom1EmployeeRows = await dbConnect.query(dbSelect.lastServerRoomEmployeeInit(29));
-    const lastServerRoom2EmployeeRows = await dbConnect.query(dbSelect.lastServerRoomEmployeeInit(38));
+    const lastServerRoom1EmployeeRows = await dbConnect.dashboard.query(dbSelect.lastServerRoomEmployeeInit(29));
+    const lastServerRoom2EmployeeRows = await dbConnect.dashboard.query(dbSelect.lastServerRoomEmployeeInit(38));
     clientId.send(
       JSON.stringify({
         event: 'event_server_room_1_employee',
@@ -488,7 +488,7 @@ async function lastServerRoomEmployee(clientId) {
 // main functions
 async function initDash(clientId) {
   try {
-    const allTenEntryRows = await dbConnect.query(dbSelect.allTenEntry);
+    const allTenEntryRows = await dbConnect.dashboard.query(dbSelect.allTenEntry);
     // allTenEntryRows.forEach((row) => {
     //   io.to(clientId).emit('event_entry', row);
     // });
@@ -503,7 +503,7 @@ async function initDash(clientId) {
   }
 
   try {
-    const allTenExitRows = await dbConnect.query(dbSelect.allTenExit);
+    const allTenExitRows = await dbConnect.dashboard.query(dbSelect.allTenExit);
     // allTenExitRows.forEach((row) => {
     //   io.to(clientId).emit('event_exit', row);
     // });
@@ -518,7 +518,7 @@ async function initDash(clientId) {
   }
 
   try {
-    const allEmployeeUCRows = await dbConnect.query(dbSelect.allEmployeeUC);
+    const allEmployeeUCRows = await dbConnect.dashboard.query(dbSelect.allEmployeeUC);
     // allEmployeeUCRows.forEach((row) => {
     //   io.to(clientId).emit('event_employeeuc', row);
     // });
@@ -533,7 +533,7 @@ async function initDash(clientId) {
   }
 
   try {
-    const employeeTotalPerDayRows = await dbConnect.query(dbSelect.employeeTotalPerDay);
+    const employeeTotalPerDayRows = await dbConnect.dashboard.query(dbSelect.employeeTotalPerDay);
     // io.to(clientId).emit('event_employee_per_day', employeeTotalPerDayRows.length);
     clientId.send(
       JSON.stringify({
@@ -549,15 +549,15 @@ async function initDash(clientId) {
   carTotalPerDay(clientId);
   /*
   try {
-    const guestCIPerDayRows = await dbConnect.query(dbSelect.guestCIPerDay);
-    const guestEntrancePerDayRows = await dbConnect.query(dbSelect.guestEntrancePerDay);
+    const guestCIPerDayRows = await dbConnect.dashboard.query(dbSelect.guestCIPerDay);
+    const guestEntrancePerDayRows = await dbConnect.dashboard.query(dbSelect.guestEntrancePerDay);
     io.to(clientId).emit('event_guest_per_day', guestEntrancePerDayRows.length + guestCIPerDayRows.length);
   } catch (error) {
     logger.error(error);
   }
   */
   try {
-    const carTotalPerDayRows = await dbConnect.query(dbSelect.carTotalPerDay);
+    const carTotalPerDayRows = await dbConnect.dashboard.query(dbSelect.carTotalPerDay);
     // io.to(clientId).emit('event_car_per_day', carTotalPerDayRows.length);
     clientId.send(
       JSON.stringify({

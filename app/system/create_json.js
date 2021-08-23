@@ -103,7 +103,7 @@ async function createJSONRequest(socket, reqBody, retry) {
       null,
     ];
     try {
-      await dbConnect.query(dbInsert.inserGuestCardEvent, insertEventValue);
+      await dbConnect.dasboard.query(dbInsert.inserGuestCardEvent, insertEventValue);
     } catch (error) {
       logger.error(error);
     }

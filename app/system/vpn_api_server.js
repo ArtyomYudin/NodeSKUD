@@ -4,7 +4,7 @@ const dbSelect = require('../utils/db_select');
 
 async function connectedUsers(wss, clientId) {
   try {
-    const vpnOnlineRows = await dbConnect.query(dbSelect.vpnOnline);
+    const vpnOnlineRows = await dbConnect.dashboard.query(dbSelect.vpnOnline);
     if (clientId) {
       clientId.send(
         JSON.stringify({
@@ -29,7 +29,7 @@ async function connectedUsers(wss, clientId) {
 
 async function sendUserSessions(clientId, account) {
   try {
-    const vpnUserSessionsRows = await dbConnect.query(dbSelect.vpnUserSessions(account));
+    const vpnUserSessionsRows = await dbConnect.dashboard.query(dbSelect.vpnUserSessions(account));
     clientId.send(
       JSON.stringify({
         event: 'event_vpn_user_sessions',
@@ -47,7 +47,7 @@ async function sendUserSessionForDate(clientId, data) {
 
   // logger.info(JSON.stringify(date));
   try {
-    const vpnUserSessionForDateRows = await dbConnect.query(dbSelect.vpnUserSessionForDate(date, account));
+    const vpnUserSessionForDateRows = await dbConnect.dashboard.query(dbSelect.vpnUserSessionForDate(date, account));
     clientId.send(
       JSON.stringify({
         event: 'event_vpn_user_session_for_date',
@@ -61,7 +61,7 @@ async function sendUserSessionForDate(clientId, data) {
 
 async function allUsers(wss, clientId) {
   try {
-    const vpnAllUsersRows = await dbConnect.query(dbSelect.vpnAllUsers);
+    const vpnAllUsersRows = await dbConnect.dashboard.query(dbSelect.vpnAllUsers);
     if (clientId) {
       clientId.send(
         JSON.stringify({
@@ -87,7 +87,7 @@ async function allUsers(wss, clientId) {
 async function sendUserStatus(clientId, data) {
   const account = JSON.parse(JSON.stringify(data)).vpnAccount;
   try {
-    const vpnUserStatusRows = await dbConnect.query(dbSelect.vpnUserStatus(account));
+    const vpnUserStatusRows = await dbConnect.dashboard.query(dbSelect.vpnUserStatus(account));
     if (vpnUserStatusRows.length !== 0) {
       clientId.send(
         JSON.stringify({

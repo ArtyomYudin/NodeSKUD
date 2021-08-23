@@ -4,13 +4,13 @@ const dbSelect = require('../utils/db_select');
 
 async function currentDayAvayaCDR(wss, clientId) {
   try {
-    const dhcpAllLeasesRows = await dbConnect.query(dbSelect.avayaCDRCurrentDay);
+    const currentDayCDRRows = await dbConnect.cdr.query(dbSelect.avayaCDRCurrentDay);
     // logger.info(JSON.stringify(dhcpAllLeasesRows));
     if (clientId) {
       clientId.send(
         JSON.stringify({
           event: 'event_avaya_cdr_current_day',
-          data: dhcpAllLeasesRows,
+          data: currentDayCDRRows,
         }),
       );
     } else {
@@ -18,7 +18,7 @@ async function currentDayAvayaCDR(wss, clientId) {
         client.send(
           JSON.stringify({
             event: 'event_avaya_cdr_current_day',
-            data: dhcpAllLeasesRows,
+            data: currentDayCDRRows,
           }),
         );
       });

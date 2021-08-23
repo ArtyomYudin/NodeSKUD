@@ -1,11 +1,8 @@
-'use strict';
-
 const mysql = require('mysql');
 const md5 = require('md5');
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-const config = require('./../config/system_config');
-const dbConnection = require('./../utils/db_connect');
-
+const config = require('../config/system_config');
+const dbConnection = require('../utils/db_connect');
 
 function userLoginCheck(reqBody, res) {
   const postReq = {
@@ -26,7 +23,7 @@ function userLoginCheck(reqBody, res) {
     /** add other headers as per requirement */
   };
 
-  dbConnection.query(dbQuery, (err, rows) => {
+  dbConnection.dashboard.query(dbQuery, (err, rows) => {
     if (err) {
       // res.statusCode = 401;
       // res.writeHead(200, headers);
@@ -39,14 +36,16 @@ function userLoginCheck(reqBody, res) {
       });
 
       res.writeHead(200, headers);
-      res.end(JSON.stringify({
-        id: userId,
-        email: rows[0].email,
-        firstName: rows[0].first_name,
-        lastName: rows[0].last_name,
-        accessRole: rows[0].access_role,
-        token: userToken,
-      }));
+      res.end(
+        JSON.stringify({
+          id: userId,
+          email: rows[0].email,
+          firstName: rows[0].first_name,
+          lastName: rows[0].last_name,
+          accessRole: rows[0].access_role,
+          token: userToken,
+        }),
+      );
     } else {
       res.writeHead(400, headers);
       res.end(JSON.stringify({ Error: true, Message: 'wrong email/password combination' }));

@@ -335,13 +335,20 @@ const dhcpInfo = `SELECT dhcp_info.scope_id	 AS scopeId	,
                   FROM dhcp_info
                   ORDER by dhcp_info.scope_id`;
 
-const avayaCDRCurrentDay = `SELECT dhcp_leases.ip_address AS ipAddress,
-                              dhcp_leases.mac_address AS macAddress,
-                              dhcp_leases.host_name AS hostName,
-                              dhcp_leases.address_state AS addressState,
-                              dhcp_leases.lease_expiry_time AS leaseExpiryTime
-                     FROM dhcp_leases
-                     ORDER by dhcp_leases.ip_address`;
+const avayaCDRCurrentDay = `SET SQL_BIG_SELECTS=1;
+                            SELECT voip_traffic.traffic_date AS callDateTime,
+                              cast(voip_traffic.duration as decimal) AS callDuration,
+                              voip_traffic.calling_number AS callingNumber,
+                              COALESCE(t.ow_lname , 'User Not Found') AS callingName,
+                              voip_traffic.called_number AS calledNumber,
+                              COALESCE(tt.ow_lname , 'User Not Found') AS calledName,
+                              voip_traffic.call_code AS callCode
+                            FROM voip_traffic
+                              LEFT OUTER JOIN ngdashboard.owners  t ON voip_traffic.calling_number =t.ow_caller_id
+                              LEFT OUTER JOIN ngdashboard.owners  tt ON voip_traffic.called_number =tt.ow_caller_id
+                            WHERE (date(voip_traffic.traffic_date) = CURDATE()) 
+                            ORDER by voip_traffic.traffic_date
+                            LIMIT 100`;
 
 exports.allTenEntry = allTenEntry;
 exports.allTenExit = allTenExit;

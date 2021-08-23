@@ -4,7 +4,7 @@ const dbSelect = require('../utils/db_select');
 
 async function dhcpAllLeases(wss, clientId) {
   try {
-    const dhcpAllLeasesRows = await dbConnect.query(dbSelect.dhcpAllLeases);
+    const dhcpAllLeasesRows = await dbConnect.dashboard.query(dbSelect.dhcpAllLeases);
     if (clientId) {
       clientId.send(
         JSON.stringify({
@@ -29,7 +29,7 @@ async function dhcpAllLeases(wss, clientId) {
 
 async function dhcpInfo(wss, clientId) {
   try {
-    const dhcpInfoRows = await dbConnect.query(dbSelect.dhcpInfo);
+    const dhcpInfoRows = await dbConnect.dashboard.query(dbSelect.dhcpInfo);
     if (clientId) {
       clientId.send(
         JSON.stringify({

@@ -19,6 +19,13 @@ const config = {
     password: 'S9oE43h5OMaw',
     dbname: 'ngdashboard',
   },
+  cdrdatabase: {
+    host: 'localhost',
+    // host: '172.20.4.195',
+    user: 'cdrvhost_rw',
+    password: 'pjJ49E7K',
+    dbname: 'cdrvhost',
+  },
   jwt: {
     secret: 'HxQiRJ1LkSga',
   },
