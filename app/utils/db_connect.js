@@ -18,6 +18,7 @@ const dbCDRConnection = mysql.createPool({
   user: config.cdrdatabase.user,
   password: config.cdrdatabase.password,
   database: config.cdrdatabase.dbname,
+  multipleStatements: true,
   timezone: 'Europe/Moscow',
 });
 

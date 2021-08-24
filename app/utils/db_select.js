@@ -335,20 +335,32 @@ const dhcpInfo = `SELECT dhcp_info.scope_id	 AS scopeId	,
                   FROM dhcp_info
                   ORDER by dhcp_info.scope_id`;
 
-const avayaCDRCurrentDay = `SET SQL_BIG_SELECTS=1;
+const avayaCDRCurrentDay = `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_currentday
                             SELECT voip_traffic.traffic_date AS callDateTime,
-                              cast(voip_traffic.duration as decimal) AS callDuration,
-                              voip_traffic.calling_number AS callingNumber,
-                              COALESCE(t.ow_lname , 'User Not Found') AS callingName,
-                              voip_traffic.called_number AS calledNumber,
-                              COALESCE(tt.ow_lname , 'User Not Found') AS calledName,
-                              voip_traffic.call_code AS callCode
+                                   cast(voip_traffic.duration as decimal) AS callDuration,
+                                   voip_traffic.calling_number AS callingNumber,
+                                   voip_traffic.called_number AS calledNumber,
+                                   voip_traffic.call_code AS callCode
                             FROM voip_traffic
-                              LEFT OUTER JOIN ngdashboard.owners  t ON voip_traffic.calling_number =t.ow_caller_id
-                              LEFT OUTER JOIN ngdashboard.owners  tt ON voip_traffic.called_number =tt.ow_caller_id
                             WHERE (date(voip_traffic.traffic_date) = CURDATE()) 
-                            ORDER by voip_traffic.traffic_date
-                            LIMIT 100`;
+                            ORDER by voip_traffic.traffic_date;
+                            SELECT voip_traffic_currentday.*,
+                                   t.fullName AS callingName,
+                                   tt.fullName AS calledName
+                            FROM voip_traffic_currentday
+                            LEFT OUTER JOIN (
+                              select CONCAT(ow_lname, " ", ow_fname, " ", ow_mname) AS fullName,
+                                ow_caller_id 
+                              from ngdashboard.owners 
+                              group by ow_caller_id
+                              ) t ON voip_traffic_currentday.callingNumber =t.ow_caller_id
+                            LEFT OUTER JOIN (
+                              select CONCAT(ow_lname, " ", ow_fname, " ", ow_mname) AS fullName,
+                                ow_caller_id 
+                              from ngdashboard.owners 
+                              group by ow_caller_id
+                              ) tt ON voip_traffic_currentday.calledNumber =tt.ow_caller_id;
+                              DROP TEMPORARY TABLE voip_traffic_currentday`;
 
 exports.allTenEntry = allTenEntry;
 exports.allTenExit = allTenExit;
