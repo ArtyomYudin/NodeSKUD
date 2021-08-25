@@ -343,22 +343,23 @@ const avayaCDRCurrentDay = `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_cu
                                    voip_traffic.call_code AS callCode
                             FROM voip_traffic
                             WHERE (date(voip_traffic.traffic_date) = CURDATE()) 
-                            ORDER by voip_traffic.traffic_date;
+                            ORDER by voip_traffic.traffic_date
+                            DESC;
                             SELECT voip_traffic_currentday.*,
                                    t.fullName AS callingName,
                                    tt.fullName AS calledName
                             FROM voip_traffic_currentday
                             LEFT OUTER JOIN (
-                              select CONCAT(ow_lname, " ", ow_fname, " ", ow_mname) AS fullName,
+                              SELECT CONCAT(ow_lname, " ", ow_fname, " ", ow_mname) AS fullName,
                                 ow_caller_id 
-                              from ngdashboard.owners 
-                              group by ow_caller_id
+                              FROM ngdashboard.owners 
+                              GROUP BY ow_caller_id
                               ) t ON voip_traffic_currentday.callingNumber =t.ow_caller_id
                             LEFT OUTER JOIN (
-                              select CONCAT(ow_lname, " ", ow_fname, " ", ow_mname) AS fullName,
+                              SELECT CONCAT(ow_lname, " ", ow_fname, " ", ow_mname) AS fullName,
                                 ow_caller_id 
-                              from ngdashboard.owners 
-                              group by ow_caller_id
+                              FROM ngdashboard.owners 
+                              GROUP BY ow_caller_id
                               ) tt ON voip_traffic_currentday.calledNumber =tt.ow_caller_id;
                               DROP TEMPORARY TABLE voip_traffic_currentday`;
 
