@@ -336,14 +336,20 @@ const dhcpInfo = `SELECT dhcp_info.scope_id	 AS scopeId	,
                   ORDER by dhcp_info.scope_id`;
 
 const avayaCDRCurrentDay = `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_currentday
-                            SELECT voip_traffic.traffic_date AS callDateTime,
-                                   cast(voip_traffic.duration as decimal) AS callDuration,
-                                   voip_traffic.calling_number AS callingNumber,
-                                   voip_traffic.called_number AS calledNumber,
-                                   voip_traffic.call_code AS callCode
-                            FROM voip_traffic
-                            WHERE (date(voip_traffic.traffic_date) = CURDATE()) 
-                            ORDER by voip_traffic.traffic_date
+                            SELECT (cdr_t.traffic_date - INTERVAL (
+                                        cast(substring(cdr_t.duration, 1, 1) as DECIMAL) * 3600 +
+                                        cast(substring(cdr_t.duration, 2, 2) as DECIMAL) * 60 +
+                                        cast(substring(cdr_t.duration, 4, 2) as DECIMAL)
+                                        ) SECOND) AS callDateTime,
+                                   (cast(substring(cdr_t.duration, 1, 1) as DECIMAL) * 3600 +
+                                   cast(substring(cdr_t.duration, 2, 2) as DECIMAL) * 60 +
+                                   cast(substring(cdr_t.duration, 4, 2) as DECIMAL)) AS callDuration,
+                                   cdr_t.calling_number AS callingNumber,
+                                   cdr_t.called_number AS calledNumber,
+                                   cdr_t.call_code AS callCode
+                            FROM voip_traffic as cdr_t
+                            WHERE (date(cdr_t.traffic_date) = CURDATE()) 
+                            ORDER by callDateTime
                             DESC;
                             SELECT voip_traffic_currentday.*,
                                    t.fullName AS callingName,
