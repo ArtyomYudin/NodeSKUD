@@ -610,6 +610,9 @@ wss.on('connection', ws => {
     if (JSON.parse(message).event === 'get-vpn-user-session') {
       vpnAPIServer.sendUserSessionForDate(ws, JSON.parse(message).data);
     }
+    if (JSON.parse(message).event === 'get-filtered-avaya-cdr') {
+      avayaAPIServer.sendFilteredAvayaCDR(ws, JSON.parse(message).data);
+    }
     logger.info(`Received message ${message}`);
   });
 

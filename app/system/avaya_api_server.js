@@ -28,6 +28,20 @@ async function currentDayAvayaCDR(wss, clientId) {
   }
 }
 
+async function sendFilteredAvayaCDR(clientId, filter) {
+  try {
+    const filteredAvayaCDRRows = await dbConnect.dashboard.query(dbSelect.vpnUserSessions(account));
+    clientId.send(
+      JSON.stringify({
+        event: 'event_avaya_cdr_filtered',
+        data: filteredAvayaCDRRows,
+      }),
+    );
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
 async function initApi(wss, clientId) {
   currentDayAvayaCDR(wss, clientId);
 }
@@ -40,3 +54,4 @@ async function avayaEvents(wss, clientId) {
 
 exports.init = initApi;
 exports.avayaEvents = avayaEvents;
+exports.sendFilteredAvayaCDR = sendFilteredAvayaCDR;
