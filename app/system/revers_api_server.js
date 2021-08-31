@@ -662,6 +662,7 @@ function reversAPIServer() {
   vpnAPIServer.vpnEvents(wss);
   dhcpAPIServer.dhcpEvents(wss);
   avayaAPIServer.avayaEvents(wss);
+  avayaAPIServer.cdrcollector();
 }
 
 exports.sendExtJSON = sendExtJSON;
