@@ -2,12 +2,9 @@
  * Модуль настройки логирования
  */
 
-'use strict';
-
 const { createLogger, format, transports } = require('winston');
 
 const { combine, timestamp, printf } = format;
-
 
 const options = {
   file_info: {
@@ -41,10 +38,7 @@ const options = {
 const myFormat = printf(info => `${info.timestamp} ${info.level}: ${JSON.stringify(info.message)}`);
 
 const logger = createLogger({
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    myFormat,
-  ),
+  format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), myFormat),
   transports: [
     // new transports.File(options.file_error),
     new transports.File(options.file_info),
@@ -53,7 +47,7 @@ const logger = createLogger({
   exitOnError: false,
 });
 
-logger.on('error', (err) => {
+logger.on('error', err => {
   console.log('Error in logger occured:', err.stack);
 });
 

@@ -613,6 +613,10 @@ wss.on('connection', ws => {
     if (JSON.parse(message).event === 'get-filtered-avaya-cdr') {
       avayaAPIServer.sendFilteredAvayaCDR(ws, JSON.parse(message).data);
     }
+    if (JSON.parse(message).event === 'avaya-cdr-reset-filter') {
+      avayaAPIServer.currentDayAvayaCDR(wss, ws);
+    }
+
     logger.info(`Received message ${message}`);
   });
 
@@ -662,7 +666,6 @@ function reversAPIServer() {
   vpnAPIServer.vpnEvents(wss);
   dhcpAPIServer.dhcpEvents(wss);
   avayaAPIServer.avayaEvents(wss);
-  avayaAPIServer.cdrcollector();
 }
 
 exports.sendExtJSON = sendExtJSON;

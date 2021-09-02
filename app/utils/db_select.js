@@ -369,6 +369,40 @@ const avayaCDRCurrentDay = `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_cu
                               ) tt ON voip_traffic_currentday.calledNumber =tt.ow_caller_id;
                               DROP TEMPORARY TABLE voip_traffic_currentday`;
 
+const avayaCDRFiltered = filterQuery => `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_filtered
+                              SELECT (cdr_t.traffic_date - INTERVAL (
+                                          cast(substring(cdr_t.duration, 1, 1) as DECIMAL) * 3600 +
+                                          cast(substring(cdr_t.duration, 2, 2) as DECIMAL) * 60 +
+                                          cast(substring(cdr_t.duration, 4, 2) as DECIMAL)
+                                          ) SECOND) AS callDateTime,
+                                     (cast(substring(cdr_t.duration, 1, 1) as DECIMAL) * 3600 +
+                                     cast(substring(cdr_t.duration, 2, 2) as DECIMAL) * 60 +
+                                     cast(substring(cdr_t.duration, 4, 2) as DECIMAL)) AS callDuration,
+                                     cdr_t.calling_number AS callingNumber,
+                                     cdr_t.called_number AS calledNumber,
+                                     cdr_t.call_code AS callCode
+                              FROM voip_traffic as cdr_t
+                              ${filterQuery} 
+                              ORDER by callDateTime
+                              DESC;
+                              SELECT voip_traffic_filtered.*,
+                                     t.fullName AS callingName,
+                                     tt.fullName AS calledName
+                              FROM voip_traffic_filtered
+                              LEFT OUTER JOIN (
+                                SELECT CONCAT(ow_lname, ' ', ow_fname, ' ', ow_mname) AS fullName,
+                                  ow_caller_id 
+                                FROM ngdashboard.owners 
+                                GROUP BY ow_caller_id
+                                ) t ON voip_traffic_filtered.callingNumber =t.ow_caller_id
+                              LEFT OUTER JOIN (
+                                SELECT CONCAT(ow_lname, ' ', ow_fname, ' ', ow_mname) AS fullName,
+                                  ow_caller_id 
+                                FROM ngdashboard.owners 
+                                GROUP BY ow_caller_id
+                                ) tt ON voip_traffic_filtered.calledNumber =tt.ow_caller_id;
+                                DROP TEMPORARY TABLE voip_traffic_filtered`;
+
 exports.allTenEntry = allTenEntry;
 exports.allTenExit = allTenExit;
 exports.allEmployeeUC = allEmployeeUC;
@@ -402,3 +436,4 @@ exports.vpnUserStatus = vpnUserStatus;
 exports.dhcpAllLeases = dhcpAllLeases;
 exports.dhcpInfo = dhcpInfo;
 exports.avayaCDRCurrentDay = avayaCDRCurrentDay;
+exports.avayaCDRFiltered = avayaCDRFiltered;

@@ -1,4 +1,4 @@
-const net = require('net');
+// const net = require('net');
 
 const logger = require('../config/logger_config');
 const dbConnect = require('../utils/db_connect');
@@ -30,10 +30,23 @@ async function currentDayAvayaCDR(wss, clientId) {
   }
 }
 
-/*
 async function sendFilteredAvayaCDR(clientId, filter) {
+  let filterQuery = '';
+  if (filter.dateStart !== '') {
+    filterQuery = `WHERE (cdr_t.traffic_date >= '${filter.dateStart}'`;
+  } else {
+    filterQuery = 'WHERE (cdr_t.traffic_date >="'.date('Y-m-d');
+  }
+  if (filter.dateEnd === '') {
+    filterQuery = `${filterQuery} AND cdr_t.traffic_date <="${filter.dateEnd}")`;
+  } else {
+    filterQuery = `${filterQuery})`;
+  }
+  logger.info(dbSelect.avayaCDRFiltered(filterQuery).trim());
+
   try {
-    const filteredAvayaCDRRows = await dbConnect.dashboard.query(dbSelect.vpnUserSessions(account));
+    const filteredAvayaCDRRows = await dbConnect.cdr.query(dbSelect.avayaCDRFiltered(filterQuery));
+    logger.info(filteredAvayaCDRRows);
     clientId.send(
       JSON.stringify({
         event: 'event_avaya_cdr_filtered',
@@ -44,41 +57,6 @@ async function sendFilteredAvayaCDR(clientId, filter) {
     logger.error(error);
   }
 }
-*/
-
-function cdrcollector() {
-  const server = net.createServer(socket => {
-    socket.setEncoding('binary');
-    // socket.setKeepAlive(true);
-    let body;
-    logger.info('client connected');
-    socket.write('Ok.');
-
-    socket.on('end', () => {
-      logger.info('client disconnected');
-      // logger.info(`Data received from client: ${body}`);
-    });
-    socket.on('data', chunk => {
-      body += chunk;
-      // logger.info(`Data received from client: ${Buffer.from(chunk).toString()}`);
-      logger.info(`Data received from client: ${body}`);
-
-      // echo data
-      // const isKernelBufferFull = socket.write(body);
-      // if (isKernelBufferFull) {
-      //  console.log('Data was flushed successfully from kernel buffer i.e written successfully!');
-      // } else {
-      //  socket.pause();
-      // }
-    });
-  });
-  server.on('error', err => {
-    throw err;
-  });
-  server.listen(9000, () => {
-    logger.info('server bound');
-  });
-}
 
 async function initApi(wss, clientId) {
   currentDayAvayaCDR(wss, clientId);
@@ -87,10 +65,10 @@ async function initApi(wss, clientId) {
 async function avayaEvents(wss, clientId) {
   setInterval(() => {
     currentDayAvayaCDR(wss, clientId);
-  }, 300000);
+  }, 60000);
 }
 
 exports.init = initApi;
 exports.avayaEvents = avayaEvents;
-// exports.sendFilteredAvayaCDR = sendFilteredAvayaCDR;
-exports.cdrcollector = cdrcollector;
+exports.currentDayAvayaCDR = currentDayAvayaCDR;
+exports.sendFilteredAvayaCDR = sendFilteredAvayaCDR;
