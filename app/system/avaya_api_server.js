@@ -31,26 +31,37 @@ async function currentDayAvayaCDR(wss, clientId) {
 }
 
 async function sendFilteredAvayaCDR(clientId, filter) {
+  const currDate = new Date().toISOString().slice(0, 10);
   let filterQuery = '';
-  if (filter.dateStart !== '') {
-    filterQuery = `WHERE (cdr_t.traffic_date >= '${filter.dateStart}'`;
+  if (filter.dateStart) {
+    filterQuery = `WHERE (date(cdr_t.traffic_date) >= '${filter.dateStart}')`;
   } else {
-    filterQuery = 'WHERE (cdr_t.traffic_date >="'.date('Y-m-d');
+    filterQuery = `WHERE (date(cdr_t.traffic_date) >= '${currDate}')`;
   }
-  if (filter.dateEnd === '') {
-    filterQuery = `${filterQuery} AND cdr_t.traffic_date <="${filter.dateEnd}")`;
-  } else {
-    filterQuery = `${filterQuery})`;
+  if (filter.dateEnd) {
+    filterQuery = `${filterQuery} AND (date(cdr_t.traffic_date) <= '${filter.dateEnd}')`;
   }
-  logger.info(dbSelect.avayaCDRFiltered(filterQuery).trim());
+  if (filter.callNumber) {
+    if (filter.callDirectionIn && !filter.callDirectionOut) {
+      filterQuery = `${filterQuery} AND (cdr_t.called_number = ${filter.callNumber})`;
+    }
+    if (filter.callDirectionOut && !filter.callDirectionIn) {
+      filterQuery = `${filterQuery} AND (cdr_t.calling_number = ${filter.callNumber})`;
+    }
+    if ((filter.callDirectionOut && filter.callDirectionIn) || !(filter.callDirectionOut && !filter.callDirectionIn)) {
+      filterQuery = `${filterQuery} AND (cdr_t.called_number = ${filter.callNumber} OR cdr_t.calling_number = ${filter.callNumber})`;
+    }
+  }
+
+  logger.info(dbSelect.avayaCDRFiltered(filterQuery));
 
   try {
     const filteredAvayaCDRRows = await dbConnect.cdr.query(dbSelect.avayaCDRFiltered(filterQuery));
-    logger.info(filteredAvayaCDRRows);
+    // logger.info(filteredAvayaCDRRows);
     clientId.send(
       JSON.stringify({
         event: 'event_avaya_cdr_filtered',
-        data: filteredAvayaCDRRows,
+        data: filteredAvayaCDRRows[1],
       }),
     );
   } catch (error) {
