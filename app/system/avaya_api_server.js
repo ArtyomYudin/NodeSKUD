@@ -33,6 +33,7 @@ async function currentDayAvayaCDR(wss, clientId) {
 async function sendFilteredAvayaCDR(clientId, filter) {
   const currDate = new Date().toISOString().slice(0, 10);
   let filterQuery = '';
+  let filterQueryWithName = '';
   if (filter.dateStart) {
     filterQuery = `WHERE (date(cdr_t.traffic_date) >= '${filter.dateStart}')`;
   } else {
@@ -48,15 +49,27 @@ async function sendFilteredAvayaCDR(clientId, filter) {
     if (filter.callDirectionOut && !filter.callDirectionIn) {
       filterQuery = `${filterQuery} AND (cdr_t.calling_number = ${filter.callNumber})`;
     }
-    if ((filter.callDirectionOut && filter.callDirectionIn) || !(filter.callDirectionOut && !filter.callDirectionIn)) {
+    if ((filter.callDirectionOut && filter.callDirectionIn) || (!filter.callDirectionOut && !filter.callDirectionIn)) {
       filterQuery = `${filterQuery} AND (cdr_t.called_number = ${filter.callNumber} OR cdr_t.calling_number = ${filter.callNumber})`;
     }
   }
 
-  logger.info(dbSelect.avayaCDRFiltered(filterQuery));
+  if (filter.callName) {
+    if (filter.callDirectionIn && !filter.callDirectionOut) {
+      filterQueryWithName = `WHERE tt.fullName LIKE '${filter.callName}%'`;
+    }
+    if (filter.callDirectionOut && !filter.callDirectionIn) {
+      filterQueryWithName = `WHERE t.fullName LIKE '${filter.callName}%'`;
+    }
+    if ((filter.callDirectionOut && filter.callDirectionIn) || (!filter.callDirectionOut && !filter.callDirectionIn)) {
+      filterQueryWithName = `WHERE t.fullName LIKE '${filter.callName}%' OR tt.fullName LIKE '${filter.callName}%'`;
+    }
+  }
+
+  logger.info(dbSelect.avayaCDRFiltered(filterQuery, filterQueryWithName));
 
   try {
-    const filteredAvayaCDRRows = await dbConnect.cdr.query(dbSelect.avayaCDRFiltered(filterQuery));
+    const filteredAvayaCDRRows = await dbConnect.cdr.query(dbSelect.avayaCDRFiltered(filterQuery, filterQueryWithName));
     // logger.info(filteredAvayaCDRRows);
     clientId.send(
       JSON.stringify({

@@ -369,7 +369,7 @@ const avayaCDRCurrentDay = `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_cu
                               ) tt ON voip_traffic_currentday.calledNumber =tt.ow_caller_id;
                               DROP TEMPORARY TABLE voip_traffic_currentday`;
 
-const avayaCDRFiltered = filterQuery => `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_filtered
+const avayaCDRFiltered = (filterQuery, filterQueryWithName) => `CREATE TEMPORARY TABLE IF NOT EXISTS voip_traffic_filtered
                               SELECT (cdr_t.traffic_date - INTERVAL (
                                           cast(substring(cdr_t.duration, 1, 1) as DECIMAL) * 3600 +
                                           cast(substring(cdr_t.duration, 2, 2) as DECIMAL) * 60 +
@@ -400,7 +400,8 @@ const avayaCDRFiltered = filterQuery => `CREATE TEMPORARY TABLE IF NOT EXISTS vo
                                   ow_caller_id 
                                 FROM ngdashboard.owners 
                                 GROUP BY ow_caller_id
-                                ) tt ON voip_traffic_filtered.calledNumber =tt.ow_caller_id;
+                                ) tt ON voip_traffic_filtered.calledNumber =tt.ow_caller_id
+                                ${filterQueryWithName};
                                 DROP TEMPORARY TABLE voip_traffic_filtered`;
 
 exports.allTenEntry = allTenEntry;
