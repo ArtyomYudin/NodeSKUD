@@ -171,14 +171,22 @@ const guestRealExit = building => {
                     and (${reqLitera}) ORDER by events.ev_ow_id`;
 };
 
-const carRealEntry = `SELECT guest_card.gc_value_sys
+const carRealEntry = `SELECT guest_card.gc_tstamp,
+                             guest_card.gc_value_dot,
+                             guest_card.gc_value_sys,
+                             guest_card.gc_photo_thumb,
+                             guest_card.gc_photo_link
                       FROM guest_card
                       WHERE (date(gc_tstamp) = CURDATE()) 
                         and (guest_card.gc_event = 'issue')
                         and (guest_card.gc_type = 'car')
                       ORDER by guest_card.gc_value_sys`;
 
-const carRealExit = `SELECT guest_card.gc_value_sys
+const carRealExit = `SELECT guest_card.gc_tstamp, 
+                            guest_card.gc_value_dot,
+                            guest_card.gc_value_sys,
+                            guest_card.gc_photo_thumb,
+                            guest_card.gc_photo_link
                       FROM guest_card
                       WHERE (date(gc_tstamp) = CURDATE()) 
                         and (guest_card.gc_event = 'wdraw')

@@ -100,7 +100,7 @@ async function createJSONRequest(socket, reqBody, retry) {
       reqBodyJSON.card_no,
       cardNumber,
       null,
-      null,
+      reqBodyJSON.photo,
     ];
     try {
       await dbConnect.dashboard.query(dbInsert.inserGuestCardEvent, insertEventValue);

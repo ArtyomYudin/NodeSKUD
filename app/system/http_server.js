@@ -1,19 +1,18 @@
-'use strict';
-
 const http = require('http');
-const config = require('./../config/system_config');
+const config = require('../config/system_config');
 const reversAPIServer = require('./revers_api_server');
 
-const logger = require('./../config/logger_config');
+const logger = require('../config/logger_config');
 
-const userLoginCheck = require('./../auth/user_login_check');
+const userLoginCheck = require('../auth/user_login_check');
 
 const apiEmployee = require('../api/api_employee');
 const apiGetChartData = require('../api/api_chart');
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
   'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
   // 'Access-Control-Max-Age': 2592000, // 30 days
 };
@@ -27,15 +26,15 @@ function initHttpServer() {
     }
 
     let body = [];
-    request.on('error', (err) => {
+    request.on('error', err => {
       logger.error(err);
     });
-    request.on('data', (chunk) => {
+    request.on('data', chunk => {
       body.push(chunk);
     });
     request.on('end', () => {
       body = Buffer.concat(body).toString();
-      response.on('error', (err) => {
+      response.on('error', err => {
         logger.error(err);
       });
       if (request.url === '/api/auth' && request.method === 'POST') {

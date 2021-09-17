@@ -80,13 +80,24 @@ async function carTotalPerDay(clientId) {
 }
 
 async function realCarOnTerritory(clientId) {
-  const carRealEntryArray = [];
-  const carRealExitArray = [];
+  // const carRealEntryArray = [];
+  // const carRealExitArray = [];
+  const carRealEntryArrayFull = [];
+  const carRealExitArrayFull = [];
+
   try {
     const carRealEntryRows = await dbConnect.dashboard.query(dbSelect.carRealEntry);
     carRealEntryRows.forEach((row, i) => {
-      carRealEntryArray[i] = row.gc_value_sys;
+      // carRealEntryArray[i] = row.gc_value_sys;
+      carRealEntryArrayFull[i] = {
+        guestCarTime: row.gc_tstamp,
+        guestCarValueDot: row.gc_value_dot,
+        guestCarValueSys: row.gc_value_sys,
+        guestCarPhotoThumb: row.gc_photo_thumb,
+        guestCarPhotoLink: row.gc_photo_link,
+      };
     });
+    // logger.info(`Array Entry !!!! ${JSON.stringify(carRealEntryArrayFull)}`);
   } catch (error) {
     logger.error(error);
   }
@@ -94,15 +105,29 @@ async function realCarOnTerritory(clientId) {
   try {
     const carRealExitRows = await dbConnect.dashboard.query(dbSelect.carRealExit);
     carRealExitRows.forEach((row, i) => {
-      carRealExitArray[i] = row.gc_value_sys;
+      // carRealExitArray[i] = row.gc_value_sys;
+      carRealExitArrayFull[i] = {
+        guestCarValueSys: row.gc_value_sys,
+      };
     });
+    // logger.info(`Array Exit !!!! ${JSON.stringify(carRealExitArrayFull)}`);
     let pos;
+    /*
     carRealExitArray.forEach(row => {
       pos = carRealEntryArray.indexOf(row);
       if (pos !== -1) {
         carRealEntryArray.splice(pos, 1);
       }
     });
+    */
+
+    carRealExitArrayFull.forEach(row => {
+      pos = carRealEntryArrayFull.findIndex(rowE => rowE.guestCarValueSys === row.guestCarValueSys);
+      if (pos !== -1) {
+        carRealEntryArrayFull.splice(pos, 1);
+      }
+    });
+    // logger.info(`Array !!!! ${JSON.stringify(carRealEntryArrayFull)}`);
   } catch (error) {
     logger.error(error);
   }
@@ -111,7 +136,8 @@ async function realCarOnTerritory(clientId) {
     clientId.send(
       JSON.stringify({
         event: 'event_real_car_on_territory',
-        data: carRealEntryArray.length,
+        // data: carRealEntryArray.length,
+        data: { total: carRealEntryArrayFull.length, results: carRealEntryArrayFull },
       }),
     );
   } else {
@@ -119,7 +145,8 @@ async function realCarOnTerritory(clientId) {
       client.send(
         JSON.stringify({
           event: 'event_real_car_on_territory',
-          data: carRealEntryArray.length,
+          // data: carRealEntryArray.length,
+          data: { total: carRealEntryArrayFull.length, results: carRealEntryArrayFull },
         }),
       );
     });
