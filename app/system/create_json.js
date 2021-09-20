@@ -32,7 +32,7 @@ async function createJSONRequest(socket, reqBody, retry) {
   dtStart.offsetInHours(-1);
 
   const reqBodyJSON = JSON.parse(reqBody);
-  const cardNoArray = reqBodyJSON.card_no.split('.');
+  const cardNoArray = (reqBodyJSON.card_no ? reqBodyJSON.card_no : '404').split('.');
   // const cardNoRightPart = cardNoArray[1].toString();
   let rByte = '';
 

@@ -5,7 +5,6 @@ const guestCICardId = [
 ];
 // const employeeUC = [3, 4, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205];
 const employeeUC = [3, 4, 189, 190, 191, 192, 193, 194, 195, 332];
-
 /*
 const allTenEntry = (db, cb) => {
   db.getConnection((err, conn) => {
@@ -18,6 +17,7 @@ const allTenEntry = (db, cb) => {
   });
 };
 */
+
 const allTenEntry = 'SELECT * FROM Ten_Entry ORDER BY tstamp ASC';
 const allTenExit = 'SELECT * FROM Ten_Exit ORDER BY tstamp ASC';
 // const allEmployee = 'SELECT * FROM Employee ORDER BY tstamp ASC';
@@ -177,10 +177,10 @@ const carRealEntry = `SELECT guest_card.gc_tstamp,
                              guest_card.gc_photo_thumb,
                              guest_card.gc_photo_link
                       FROM guest_card
-                      WHERE (date(gc_tstamp) >= SUBDATE(CURDATE(),1)) 
+                      WHERE (date(gc_tstamp) >= SUBDATE(CURDATE(),4)) 
                         and (guest_card.gc_event = 'issue')
                         and (guest_card.gc_type = 'car')
-                      ORDER by guest_card.gc_value_sys`;
+                      ORDER by guest_card.gc_tstamp`;
 
 const carRealExit = `SELECT guest_card.gc_tstamp, 
                             guest_card.gc_value_dot,
@@ -188,10 +188,10 @@ const carRealExit = `SELECT guest_card.gc_tstamp,
                             guest_card.gc_photo_thumb,
                             guest_card.gc_photo_link
                       FROM guest_card
-                      WHERE (date(gc_tstamp) >= SUBDATE(CURDATE(),1))
+                      WHERE (date(gc_tstamp) >= SUBDATE(CURDATE(),4))
                         and (guest_card.gc_event = 'wdraw')
                         and (guest_card.gc_type = 'car')
-                      ORDER by guest_card.gc_value_sys`;
+                      ORDER by guest_card.gc_tstamp`;
 
 const apiGetAllEmployee = `SELECT owners.ow_id AS id,
                                   owners.ow_lname AS lastName,

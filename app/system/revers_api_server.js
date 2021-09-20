@@ -14,6 +14,7 @@ const initZabbixAPIServer = require('./zabbix_api_server');
 const vpnAPIServer = require('./vpn_api_server');
 const dhcpAPIServer = require('./dhcp_api_server');
 const avayaAPIServer = require('./avaya_api_server');
+const sendEmailNotification = require('./send_email');
 
 const socket = initApiSocket();
 // const http = httpServer(socket);
@@ -120,7 +121,6 @@ async function realCarOnTerritory(clientId) {
       }
     });
     */
-
     carRealExitArrayFull.forEach(row => {
       pos = carRealEntryArrayFull.findIndex(rowE => rowE.guestCarValueSys === row.guestCarValueSys);
       if (pos !== -1) {
@@ -128,6 +128,7 @@ async function realCarOnTerritory(clientId) {
       }
     });
     // logger.info(`Array !!!! ${JSON.stringify(carRealEntryArrayFull)}`);
+    if (carRealEntryArrayFull.length > 2 && !clientId) sendEmailNotification(`Выдано пропусков: ${carRealEntryArrayFull.length}`);
   } catch (error) {
     logger.error(error);
   }
