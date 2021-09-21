@@ -128,7 +128,7 @@ async function realCarOnTerritory(clientId) {
       }
     });
     // logger.info(`Array !!!! ${JSON.stringify(carRealEntryArrayFull)}`);
-    if (carRealEntryArrayFull.length > 2 && !clientId) sendEmailNotification(`Выдано пропусков: ${carRealEntryArrayFull.length}`);
+    if (carRealEntryArrayFull.length >= 7 && !clientId) sendEmailNotification(`Выдано пропусков: ${carRealEntryArrayFull.length}`);
   } catch (error) {
     logger.error(error);
   }
