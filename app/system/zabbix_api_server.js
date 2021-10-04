@@ -90,8 +90,8 @@ async function getProviderData(token) {
       output: ['hostid', 'key_', 'name', 'lastvalue'],
       filter: {
         key_: [
-          'ifHCInOctets[GigabitEthernet0/1/0]',
-          'IfHCOutOctets[GigabitEthernet0/1/0]',
+          'ifHCInOctets[GigabitEthernet0/0/0]',
+          'IfHCOutOctets[GigabitEthernet0/0/0]',
           'ifHCInOctets[GigabitEthernet0/2]',
           'IfHCOutOctets[GigabitEthernet0/2]',
           'ifHCInOctets[GigabitEthernet0/3]',
@@ -102,6 +102,7 @@ async function getProviderData(token) {
       },
     },
   };
+
   const dataResponse = await fetch(config.zabbix.host, {
     method: 'post',
     body: JSON.stringify(postData),
