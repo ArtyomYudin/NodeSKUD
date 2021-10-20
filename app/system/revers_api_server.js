@@ -1,3 +1,4 @@
+const scheduler = require('node-schedule');
 const logger = require('../config/logger_config');
 
 const initApiSocket = require('./revers_api_socket');
@@ -668,6 +669,62 @@ process.on('uncaughtException', err => {
 });
 
 function reversAPIServer() {
+  const rule = new scheduler.RecurrenceRule();
+  rule.hour = 3;
+  rule.minute = 0;
+  rule.second = 0;
+  rule.dayOfWeek = new scheduler.Range(0, 6);
+
+  const job = scheduler.scheduleJob(rule, async () => {
+    const carRealEntryArrayFull = [];
+    const carRealExitArrayFull = [];
+    try {
+      const carRealEntryRows = await dbConnect.dashboard.query(dbSelect.carRealEntry);
+      carRealEntryRows.forEach((row, i) => {
+        carRealEntryArrayFull[i] = {
+          guestCarTime: row.gc_tstamp,
+          guestCarValueDot: row.gc_value_dot,
+          guestCarValueSys: row.gc_value_sys,
+          guestCarPhotoThumb: row.gc_photo_thumb,
+          guestCarPhotoLink: row.gc_photo_link,
+        };
+      });
+    } catch (error) {
+      logger.error(error);
+    }
+    try {
+      const carRealExitRows = await dbConnect.dashboard.query(dbSelect.carRealExit);
+      carRealExitRows.forEach((row, i) => {
+        carRealExitArrayFull[i] = {
+          guestCarValueSys: row.gc_value_sys,
+        };
+      });
+      let pos;
+      carRealExitArrayFull.forEach(row => {
+        pos = carRealEntryArrayFull.findIndex(rowE => rowE.guestCarValueSys === row.guestCarValueSys);
+        if (pos !== -1) {
+          carRealEntryArrayFull.splice(pos, 1);
+        }
+      });
+      carRealEntryArrayFull.forEach(row => {
+        const dateEntry = new Date(row.guestCarTime);
+        const dateToday = new Date();
+        if (dateEntry.getDate() < dateToday.getDate()) {
+          const insertEventValue = [dateToday, 'wdraw', 'car', row.guestCarValueDot, row.guestCarValueSys, null, 1];
+          try {
+            dbConnect.dashboard.query(dbInsert.inserGuestCardEvent, insertEventValue);
+            logger.info(`Closed card ${row.guestCarValueDot}`);
+          } catch (error) {
+            logger.error(error);
+          }
+        }
+      });
+    } catch (error) {
+      logger.error(error);
+    }
+    logger.info('Schedule job start at 3:00 AM');
+  });
+
   socket.on('data', data => {
     try {
       const resive = JSON.parse(data.slice(4).toString());
