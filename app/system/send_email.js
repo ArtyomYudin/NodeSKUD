@@ -14,9 +14,9 @@ async function sendEmailNotification(msg) {
     const info = await transporter.sendMail({
       from: '"ИТО мониторинг" <it@center-inform.ru>', // sender address
       to: 'a.yudin@center-inform.ru, n.orlov@center-inform.ru', // list of receivers
-      subject: 'Гостевой пропуск на авто', // Subject line
-      text: `${msg}`, // plain text body
-      html: `<b>${msg}</b>`, // html body
+      subject: `Гостевой пропуск на авто: {${msg}`, // Subject line
+      text: `Выдано пропусков: ${msg}`, // plain text body
+      html: `<b>Выдано пропусков: ${msg}</b>`, // html body
     });
 
     logger.info(`Message sent: ${info.messageId}`);
