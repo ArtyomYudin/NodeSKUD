@@ -128,7 +128,7 @@ async function realCarOnTerritory(clientId) {
         carRealEntryArrayFull.splice(pos, 1);
       }
     });
-    // logger.info(`Array !!!! ${JSON.stringify(carRealEntryArrayFull)}`);
+    // /logger.info(`Array !!!! ${JSON.stringify(carRealEntryArrayFull)}`);
     if (carRealEntryArrayFull.length >= 12 && !clientId) sendEmailNotification(carRealEntryArrayFull.length);
   } catch (error) {
     logger.error(error);
