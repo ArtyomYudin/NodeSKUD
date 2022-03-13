@@ -1,8 +1,9 @@
 const WebSocket = require('ws');
 
-function websocketServer() {
+function websocketServer(httpsServer) {
   const wss = new WebSocket.Server({
-    port: 3030,
+    server: httpsServer,
+    // port: 3030,
     perMessageDeflate: {
       zlibDeflateOptions: {
         // See zlib defaults.

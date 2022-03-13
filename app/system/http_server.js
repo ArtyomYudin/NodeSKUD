@@ -1,7 +1,8 @@
-const http = require('http');
+const https = require('https');
+const constants = require('crypto');
+const fs = require('fs');
 const config = require('../config/system_config');
 const reversAPIServer = require('./revers_api_server');
-
 const logger = require('../config/logger_config');
 
 const userLoginCheck = require('../auth/user_login_check');
@@ -17,8 +18,16 @@ const headers = {
   // 'Access-Control-Max-Age': 2592000, // 30 days
 };
 
+const options = {
+  key: fs.readFileSync('./cert/center_inform.key'),
+  cert: fs.readFileSync('./cert/center_inform.crt'),
+  requestCert: false,
+  // secureProtocol: 'SSLv23_method',
+  secureOptions: constants.SSL_OP_NO_SSLv3 || constants.SSL_OP_NO_SSLv2,
+};
+
 function initHttpServer() {
-  const httpServer = http.createServer((request, response) => {
+  const httpsServer = https.createServer(options, (request, response) => {
     if (request.method === 'OPTIONS') {
       response.writeHead(204, headers);
       response.end();
@@ -147,11 +156,11 @@ function initHttpServer() {
     */
   });
 
-  httpServer.listen(config.server.port, config.server.host, () => {
+  httpsServer.listen(config.server.port, config.server.host, () => {
     logger.info(`Server running at http://${config.server.host}:${config.server.port}/ ${process.pid}`);
   });
 
-  return httpServer;
+  return httpsServer;
 }
 
 module.exports = initHttpServer;

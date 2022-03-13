@@ -4,7 +4,7 @@
 
 const config = {
   server: {
-    host: '172.20.4.195',
+    host: 'it.center-inform.ru',
     // host: 'localhost',
     port: 3000,
   },

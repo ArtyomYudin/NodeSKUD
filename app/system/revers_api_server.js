@@ -9,8 +9,6 @@ const dbConnect = require('../utils/db_connect');
 const dbInsert = require('../utils/db_insert');
 const dbSelect = require('../utils/db_select');
 
-const wss = websocketServer();
-
 const initZabbixAPIServer = require('./zabbix_api_server');
 const vpnAPIServer = require('./vpn_api_server');
 const dhcpAPIServer = require('./dhcp_api_server');
@@ -25,7 +23,9 @@ const clients = [];
 
 require('events').EventEmitter.defaultMaxListeners = 45;
 
-initHttpServer();
+const httpsServer = initHttpServer();
+
+const wss = websocketServer(httpsServer);
 
 async function guestPerDay(clientId) {
   try {
