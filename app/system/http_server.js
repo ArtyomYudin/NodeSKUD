@@ -49,6 +49,10 @@ function initHttpServer() {
       if (request.url === '/api/charts' && request.method === 'POST') {
         apiGetChartData(body, response);
       }
+      if (request.url === '/api/jabber' && request.method === 'POST') {
+        logger.info(body);
+        response.end();
+      }
       if (request.method === 'POST' && request.url === '/api') {
         reversAPIServer.sendExtJSON(body);
         response.end();

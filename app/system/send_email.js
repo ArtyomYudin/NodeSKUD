@@ -13,7 +13,7 @@ async function sendEmailNotification(msg) {
     // send mail with defined transport object
     const info = await transporter.sendMail({
       from: '"ИТО мониторинг" <it@center-inform.ru>', // sender address
-      to: 'a.yudin@center-inform.ru, n.orlov@center-inform.ru', // list of receivers
+      to: 'n.orlov@center-inform.ru', // list of receivers
       subject: 'Гостевой пропуск на авто', // Subject line
       text: `${msg}`, // plain text body
       html: `<b>${msg}</b>`, // html body
