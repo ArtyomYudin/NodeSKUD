@@ -14,6 +14,7 @@ const vpnAPIServer = require('./vpn_api_server');
 const dhcpAPIServer = require('./dhcp_api_server');
 const avayaAPIServer = require('./avaya_api_server');
 const sendEmailNotification = require('./send_email');
+const zabbixBot = require('./jabber_bot');
 
 const socket = initApiSocket();
 // const http = httpServer(socket);

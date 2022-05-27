@@ -12,5 +12,20 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "files.eol": "\n"
+  "files.eol": "\n",
+
+  "files.exclude": {
+    "**/node_modules/": true,
+    //"**/tsconfig.app.json": true,
+    "**/tsconfig.spec.json": true,
+    "**/.editorconfig": true,
+    "**/.browserslistrc": true
+  },
+
+  "workbench.tree.indent": 24,
+  "workbench.tree.renderIndentGuides": "always",
+  "workbench.colorCustomizations": {
+    "tree.indentGuidesStroke": "#008070"
+  }
+  //"typescript.preferences.importModuleSpecifier": "non-relative",
 }
