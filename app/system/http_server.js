@@ -19,8 +19,8 @@ const headers = {
 };
 
 const options = {
-  key: fs.readFileSync('./cert/center_inform.key'),
-  cert: fs.readFileSync('./cert/center_inform.crt'),
+  key: fs.readFileSync('../../cert/center_inform.key'),
+  cert: fs.readFileSync('../../cert/center_inform.crt'),
   requestCert: false,
   // secureProtocol: 'SSLv23_method',
   secureOptions: constants.SSL_OP_NO_SSLv3 || constants.SSL_OP_NO_SSLv2,
