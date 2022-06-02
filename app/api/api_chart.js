@@ -1,5 +1,3 @@
-'use strict';
-
 // const logger = require('./../config/logger_config');
 const apiGetEmpAndGuestChart = require('./charts/chart_empandguest');
 
@@ -7,7 +5,8 @@ let resChartData = {};
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
   'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
 };
 
@@ -34,7 +33,6 @@ async function apiGetChartData(reqBody, res) {
     res.writeHead(400, headers);
     res.end(JSON.stringify({ Error: true, Message: 'wrong search' }));
   }
-
 
   /*
   dbConnect.query(dbSelect.apiGetGuestCount, (err, rows) => {

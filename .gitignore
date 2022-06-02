@@ -42,6 +42,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-cert/cert.pem
-cert/ssl.key
-
+/cert

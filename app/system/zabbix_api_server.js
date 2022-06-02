@@ -109,6 +109,7 @@ async function getProviderData(token) {
     headers: { 'Content-Type': 'application/json-rpc' },
   });
   const dataJSON = await dataResponse.json();
+  // logger.info(dataJSON.result);
   return dataJSON.result;
 }
 
@@ -144,7 +145,7 @@ async function serverRoomSensor(wss, clientId, data) {
 
 async function providerStatus(wss, clientId, data) {
   const providerValue = {
-    inSpeedOrange: (data[7].lastvalue / 1000 / 1000).toFixed(2),
+    inSpeedOrange: (data[8].lastvalue / 1000 / 1000).toFixed(2),
     outSpeedOrange: (data[6].lastvalue / 1000 / 1000).toFixed(2),
     inSpeedTelros: (data[4].lastvalue / 1000 / 1000).toFixed(2),
     outSpeedTelros: (data[0].lastvalue / 1000 / 1000).toFixed(2),
