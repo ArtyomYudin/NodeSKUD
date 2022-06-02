@@ -1,6 +1,7 @@
 const https = require('https');
 const constants = require('crypto');
 const fs = require('fs');
+const path = require('path');
 const config = require('../config/system_config');
 const reversAPIServer = require('./revers_api_server');
 const logger = require('../config/logger_config');
@@ -19,8 +20,8 @@ const headers = {
 };
 
 const options = {
-  key: fs.readFileSync('../../cert/center_inform.key'),
-  cert: fs.readFileSync('../../cert/center_inform.crt'),
+  key: fs.readFileSync(path.resolve(__dirname, '../../cert/center_inform.key')),
+  cert: fs.readFileSync(path.resolve(__dirname, '../../cert/center_inform.crt')),
   requestCert: false,
   // secureProtocol: 'SSLv23_method',
   secureOptions: constants.SSL_OP_NO_SSLv3 || constants.SSL_OP_NO_SSLv2,
@@ -57,10 +58,6 @@ function initHttpServer() {
       }
       if (request.url === '/api/charts' && request.method === 'POST') {
         apiGetChartData(body, response);
-      }
-      if (request.url === '/api/jabber' && request.method === 'POST') {
-        logger.info(body);
-        response.end();
       }
       if (request.method === 'POST' && request.url === '/api') {
         reversAPIServer.sendExtJSON(body);

@@ -90,14 +90,14 @@ async function getProviderData(token) {
       output: ['hostid', 'key_', 'name', 'lastvalue'],
       filter: {
         key_: [
-          'ifHCInOctets[GigabitEthernet0/0/0]',
-          'IfHCOutOctets[GigabitEthernet0/0/0]',
-          'ifHCInOctets[GigabitEthernet0/2]',
-          'IfHCOutOctets[GigabitEthernet0/2]',
-          'ifHCInOctets[GigabitEthernet0/3]',
-          'IfHCOutOctets[GigabitEthernet0/3]',
-          'ciscoBgpPeerAdminStatus[176.221.9.165]',
-          'ciscoBgpPeerAdminStatus[62.152.42.13]',
+          'net.if.in[ifHCInOctets.6]',
+          'net.if.out[ifHCOutOctets.6]',
+          'net.if.in[ifHCInOctets.3]',
+          'net.if.out[ifHCOutOctets.3]',
+          'net.if.in[ifHCInOctets.4]',
+          'net.if.out[ifHCOutOctets.4]',
+          // 'ciscoBgpPeerAdminStatus[176.221.9.165]',
+          // 'ciscoBgpPeerAdminStatus[62.152.42.13]',
         ],
       },
     },
@@ -144,15 +144,16 @@ async function serverRoomSensor(wss, clientId, data) {
 }
 
 async function providerStatus(wss, clientId, data) {
+  // logger.info(data);
   const providerValue = {
     inSpeedOrange: (data[8].lastvalue / 1000 / 1000).toFixed(2),
-    outSpeedOrange: (data[6].lastvalue / 1000 / 1000).toFixed(2),
-    inSpeedTelros: (data[4].lastvalue / 1000 / 1000).toFixed(2),
-    outSpeedTelros: (data[0].lastvalue / 1000 / 1000).toFixed(2),
-    inSpeedFilanco: (data[5].lastvalue / 1000 / 1000).toFixed(2),
-    outSpeedFilanco: (data[1].lastvalue / 1000 / 1000).toFixed(2),
-    bgp62: data[3].lastvalue,
-    bgp176: data[2].lastvalue,
+    outSpeedOrange: (data[11].lastvalue / 1000 / 1000).toFixed(2),
+    inSpeedTelros: (data[0].lastvalue / 1000 / 1000).toFixed(2),
+    outSpeedTelros: (data[3].lastvalue / 1000 / 1000).toFixed(2),
+    inSpeedFilanco: (data[1].lastvalue / 1000 / 1000).toFixed(2),
+    outSpeedFilanco: (data[4].lastvalue / 1000 / 1000).toFixed(2),
+    // bgp62: data[3].lastvalue,
+    // bgp176: data[2].lastvalue,
   };
   try {
     if (clientId) {
