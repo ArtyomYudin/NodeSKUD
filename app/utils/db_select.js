@@ -216,6 +216,22 @@ const apiGetEmployeeByID = empId => `SELECT events.ev_tstamp AS tstamp,
                                 and (owners.ow_id = "${empId}")
                                 ORDER by events.ev_tstamp desc
                                 limit 1`;
+const apiGetEmployeeByName = empName => `SELECT events.ev_tstamp AS tstamp,
+                                    owners.ow_id AS id,
+                                    owners.ow_lname AS lname,
+                                    owners.ow_fname AS fname,
+                                    owners.ow_mname AS mname,
+                                    owners.ow_photo AS photo,
+                                    apoints.ap_id AS apoint_id,
+                                    apoints.ap_name AS apoint,
+                                    events.ev_ow_id
+                              FROM (events, owners)
+                                JOIN apoints on(events.ev_addr = apoints.ap_id) 
+                              WHERE (events.ev_ow_id = owners.ow_id) 
+                                and (cast(events.ev_tstamp as date) >= curdate() - INTERVAL 90 DAY)
+                                and (owners.ow_lname LIKE '${empName}%')
+                                ORDER by events.ev_tstamp desc
+                                limit 1`;
 
 const apiGetCIGuestCount = `SELECT CAST( ev_tstamp AS DATE ) AS xAxes,
                                   COUNT( ev_ow_id ) AS yAxes
@@ -433,6 +449,7 @@ exports.carRealEntry = carRealEntry;
 exports.carRealExit = carRealExit;
 exports.apiGetAllEmployee = apiGetAllEmployee;
 exports.apiGetEmployeeByID = apiGetEmployeeByID;
+exports.apiGetEmployeeByName = apiGetEmployeeByName;
 exports.apiGetGuestCount = apiGetGuestCount;
 exports.apiGetCIGuestCount = apiGetCIGuestCount;
 exports.apiGetCarCount = apiGetCarCount;

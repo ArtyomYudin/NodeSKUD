@@ -13,30 +13,53 @@ function apiGetEmployee(reqBody, res) {
       'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
   };
-
-  dbConnect.dashboard.query(dbSelect.apiGetEmployeeByID(postReq.empId), (err, rows) => {
-    if (err) {
-      // res.statusCode = 401;
-      res.writeHead(400, headers);
-      res.end(JSON.stringify({ Error: true, Message: 'Error executing MySQL query' }));
-    } else if (rows.length === 1) {
-      res.writeHead(200, headers);
-      res.end(
-        JSON.stringify({
-          id: rows[0].id,
-          lastName: rows[0].lname,
-          firstName: rows[0].fname,
-          middleName: rows[0].mname,
-          photo: rows[0].photo,
-          apointName: rows[0].apoint,
-          timeStamp: rows[0].tstamp,
-        }),
-      );
-    } else {
-      res.writeHead(400, headers);
-      res.end(JSON.stringify({ Error: true, Message: 'wrong search' }));
-    }
-  });
+  if ('empName' in JSON.parse(reqBody)) {
+    dbConnect.dashboard.query(dbSelect.apiGetEmployeeByName(JSON.parse(reqBody).empName), (err, rows) => {
+      if (err) {
+        // res.statusCode = 401;
+        res.writeHead(400, headers);
+        res.end(JSON.stringify({ Error: true, Message: 'Error executing MySQL query' }));
+      } else if (rows.length === 1) {
+        res.writeHead(200, headers);
+        res.end(
+          JSON.stringify({
+            lastName: rows[0].lname,
+            firstName: rows[0].fname,
+            middleName: rows[0].mname,
+            apointName: rows[0].apoint,
+            timeStamp: rows[0].tstamp,
+          }),
+        );
+      } else {
+        res.writeHead(400, headers);
+        res.end(JSON.stringify({ Error: true, Message: 'wrong search' }));
+      }
+    });
+  } else {
+    dbConnect.dashboard.query(dbSelect.apiGetEmployeeByID(postReq.empId), (err, rows) => {
+      if (err) {
+        // res.statusCode = 401;
+        res.writeHead(400, headers);
+        res.end(JSON.stringify({ Error: true, Message: 'Error executing MySQL query' }));
+      } else if (rows.length === 1) {
+        res.writeHead(200, headers);
+        res.end(
+          JSON.stringify({
+            id: rows[0].id,
+            lastName: rows[0].lname,
+            firstName: rows[0].fname,
+            middleName: rows[0].mname,
+            photo: rows[0].photo,
+            apointName: rows[0].apoint,
+            timeStamp: rows[0].tstamp,
+          }),
+        );
+      } else {
+        res.writeHead(400, headers);
+        res.end(JSON.stringify({ Error: true, Message: 'wrong search' }));
+      }
+    });
+  }
 }
 
 function apiGetAllEmployee(reqBody, res) {
