@@ -27,8 +27,5 @@
   "workbench.colorCustomizations": {
     "tree.indentGuidesStroke": "#008070"
   }
-<<<<<<< HEAD
-=======
   //"typescript.preferences.importModuleSpecifier": "non-relative",
->>>>>>> f53035ce02d70dc703116e3b7798d008f98b48e8
 }
