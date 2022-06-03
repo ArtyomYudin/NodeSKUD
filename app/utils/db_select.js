@@ -229,7 +229,7 @@ const apiGetEmployeeByName = empName => `SELECT events.ev_tstamp AS tstamp,
                                 JOIN apoints on(events.ev_addr = apoints.ap_id) 
                               WHERE (events.ev_ow_id = owners.ow_id) 
                                 and (cast(events.ev_tstamp as date) >= curdate() - INTERVAL 90 DAY)
-                                and (owners.ow_lname LIKE '${empName}%')
+                                and (owners.ow_lname = '${empName}')
                                 ORDER by events.ev_tstamp desc
                                 limit 1`;
 
